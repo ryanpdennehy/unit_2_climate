@@ -25,7 +25,7 @@ Fork the repository to your own GitHub profile. From there, clone the forked rep
 
 - Data description: <http://climate.nasa.gov/vital-signs/land-ice/>
 
-The Antarctic and Greenland ice sheet mass loss data is collected by NASA's GRACE satellites. This is a pair of satellites that orbit the Earth together at a distance of about 220 km apart to sense gravity anomalies. When the leading satellite orbits over a part of Earth with slightly stronger gravity, it is pulled ahead a bit faster. Then when it passes the high-gravity area, the satellite slows down again. The distance between the two satellites is consantly measured with a microwave ranging system, and this distance, combined with precise GPS measurements for each satellite in the pair, can be used to generate a map of Earth's gravity field. Ice loss is correlated with a decline in the gravity anomaly over the ice sheet as the ice mass melts and redistributes across the ocean basin. 
+The Antarctic and Greenland ice sheet mass loss data is collected by NASA's GRACE satellites. This is a pair of satellites that orbit the Earth together at a distance of about 220 km apart to sense gravity anomalies. When the leading satellite orbits over a part of Earth with slightly stronger gravity, it is pulled ahead a bit faster. Then when it passes the high-gravity area, the satellite slows down again. The distance between the two satellites is consantly measured with a microwave ranging system, and this distance, combined with precise GPS measurements for each satellite in the pair, can be used to generate a map of Earth's gravity field. The melting of ice sheets on land is correlated with a decline in the gravity anomaly over the ice sheet as the ice mass melts and redistributes across the ocean basin. 
 
 ![](doc/grace_satellites.jpg){width=50%}
 
@@ -40,7 +40,7 @@ Check out this "Crazy Engineering: Microwaves and Lasers" video to learn more:
 - What is the uncertainty in measurement? Resolution of the data? Interpretation of missing values?
 - Plot the data and describe the trends you observe.
 
-Go to the website and register yourself as a NASA Earthdata user. From there you can click on the data and download it. In your web browser, go to `File -> Save page as -> and save it as a text file` in your Rproj folder in a directory called `/data`.
+Go to the website and register yourself as a NASA Earthdata user. From there you can click on the data and download it. If a pop-up doesn't show up when you click on the data, then in your web browser, go to `File -> Save page as -> and save it as a text file` in your Rproj folder in a directory called `/data`.
 
 #### Read in and explore data
 
@@ -51,7 +51,7 @@ ant_ice_loss = read.table("data/antarctica_mass_200204_202408.txt", skip=31, sep
 grn_ice_loss = read.table("data/greenland_mass_200204_202408.txt", skip=31, sep="", header = FALSE, col.names = c("decimal_date", "mass_Gt", "sigma_Gt")) # Greenland ice mass loss
 ```
 
-Explore the data. See how it appears in the Environment pane (upper right corner of RStudio)? You can click on it here, or use the `View()` function to open it up in a spreadsheet inside RStudio. Be careful you don't make changes to the spreadsheet in the View tab because it will change the data.
+Explore the data. See how it appears in the Environment pane (upper right corner of RStudio)? You can click on it here, or use the `View()` function to open it up in a spreadsheet inside RStudio. 
 
 ```{r}
 # View(grn_ice_loss)
@@ -76,14 +76,14 @@ plot(mass_Gt ~ decimal_date, data=ant_ice_loss, ylab="Ice Sheet Mass Loss (Gt)",
 lines(mass_Gt ~ decimal_date, data=grn_ice_loss, col='red') 
 ```
 
-Note how we can use the `+` to link multiple plots together to print to the same window.
-
 The plot window is sized to capture the range of the data originally called, which in this case was the Antarctica ice loss. When we added the Greenland mass loss data to the plot, it extended outside the bounds of the plot window. Let's manually set the limits on the y-axis so we can see the whole Greenland time series.
 
 ```{r}
 plot(mass_Gt ~ decimal_date, data=ant_ice_loss, ylab="Antarctica Mass Loss (Gt)", type='l', ylim=range(grn_ice_loss$mass_Gt)) +
 lines(mass_Gt ~ decimal_date, data=grn_ice_loss, type='l', col='red') 
 ```
+
+Note how we can use the `+` to link multiple plots together to print to the same window and have R read the commands as though they were a single line of code.
 
 From the website and from our scatter plot, we know that there was a gap between NASA Grace satellite missions from 2017-06-10 to 2018-06-14. Rather than have our plot function draw a line straight across the gap (which looks like we collected data when we didn't), we can break up the line into segments. I'm going to force R's plot() functions to note the gap in the data by inserting an `NA` into the data.frame at the start of 2018. Then let's add in grey shaded polygons behind it to show the uncertainty
 
@@ -110,7 +110,7 @@ NASA provided sigma, or one standard deviation, uncertainty data, which represen
 
 ```{r}
 head(ant_ice_loss_with_NA)
-plot(mass_Gt ~ decimal_date, data=ant_ice_loss_with_NA, ylab="Antarctica Mass Loss (Gt)", xlab="Year", type='l') +
+plot(mass_Gt ~ decimal_date, data=ant_ice_loss_with_NA, ylab="Antarctica Mass Loss (Gt)", xlab="Year", type='l', lwd=2) +
 lines((mass_Gt+2*sigma_Gt) ~ decimal_date, data=ant_ice_loss_with_NA, type='l', lty='dashed') +
 lines((mass_Gt-2*sigma_Gt) ~ decimal_date, data=ant_ice_loss_with_NA, type='l', lty='dashed') 
 ```
@@ -148,7 +148,7 @@ min(ant_ice_loss$mass_Gt)
 barplot(height=c(min(ant_ice_loss$mass_Gt), min(grn_ice_loss$mass_Gt)))
 
 # Flip to negative to positive, add x-axis labels, add more tick marks on y-axis, add y-axis title
-barplot(height=c(min(ant_ice_loss$mass_Gt)*(-1), min(grn_ice_loss$mass_Gt)*(-1)), names.arg=c("Antarctica","Greenland"), ylim=c(0,5500), ylab="Ice loss in Gt")
+barplot(height=c(min(ant_ice_loss$mass_Gt)*(-1), min(grn_ice_loss$mass_Gt)*(-1)), names.arg=c("Antarctica","Greenland"), ylim=c(0,6000), ylab="Ice loss in Gt")
 ```
 
 ***
